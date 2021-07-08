@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "reactstrap";
 import styles from "../../component/Exam/LicenseExamStlye.module.css";
-import {Container,InputWithLabel,InputTimeWithLabel,InputWithLabelID,Wrapper,} from "../reuse/Shared";
+import {Container,InputWithLabel,InputWithLabelID,Wrapper,} from "../reuse/Shared";
 import { MDBTable, MDBTableBody, MDBTableHead } from "mdbreact";
 import { confirm } from "../../component/reuse/Comfirmation";
 import api from "../../api/GetApi";
 import { useHistory } from 'react-router-dom';
-
+import { showSpinner  } from '../../action/Constants.action';
+import { hideSpinner } from '../../action/Constants.action';
+import { AuthenService } from '../../_services/authen.service';
+import {useDispatch} from 'react-redux';
 
 const ExamRound = (props) => {
   //   const history = useHistory();
@@ -21,10 +24,16 @@ const ExamRound = (props) => {
   let messageId = "028840ec147510517da2b23c8b0b6707";
   let create_user_code = "9009998";
   let update_user_code = "9009999";
-
+  const dispathch = useDispatch();
   const history = useHistory();
   
   useEffect(() => {
+    dispathch(showSpinner());
+    setTimeout(function() {
+      dispathch(hideSpinner())
+    }, 500);
+
+    const result =  AuthenService.checkPermission('PageOne', 'AED');
     fetchData();
   }, []);
 

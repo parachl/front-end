@@ -59,7 +59,7 @@ const MainMenu = () => {
         <Route path="/home/homeOne" exact component={PageOne}></Route>
         <Route path="/home/homeTwo" exact component={PageTwo}></Route>
         <Route path="/about" exact component={About}></Route>
-        <Route path="/exam" exact component={ExamRound}></Route>
+        <Route path="/examRound" exact component={ExamRound}></Route>
         {/* <Redirect from="*" to="/login"/> */}
       </Switch>
      </Container>
