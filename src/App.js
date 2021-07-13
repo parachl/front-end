@@ -23,7 +23,7 @@ function App() {
       dispathch(showSpinner());
       setTimeout(function() {
         dispathch(hideSpinner())
-      }, 3000);
+      }, 300);
       
     });
 

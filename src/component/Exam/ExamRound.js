@@ -33,7 +33,7 @@ const ExamRound = (props) => {
       dispathch(hideSpinner())
     }, 500);
 
-    const result =  AuthenService.checkPermission('PageOne', 'AED');
+    const result =  AuthenService.checkPermission('Portfolio', 'AED');
     fetchData();
   }, []);
 

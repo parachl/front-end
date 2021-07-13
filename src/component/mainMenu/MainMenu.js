@@ -5,6 +5,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import PageOne from "../pageOne/PageOne";
 import PageTwo from "../pageTwo/PageTwo";
 import ExamRound from "../Exam/ExamRound";
+import AddRole from "../role/AddRole";
 import { Container } from "reactstrap";
 import classNames from "classnames";
 import Topbar from "./TopBar/TopBar";
@@ -41,7 +42,7 @@ const MainMenu = () => {
     // authenticationService.getMenu();
     setTimeout(function() {
       dispathch(hideSpinner())
-    }, 3000);
+    }, 300);
     
     
   },[]);
@@ -60,6 +61,7 @@ const MainMenu = () => {
         <Route path="/home/homeTwo" exact component={PageTwo}></Route>
         <Route path="/about" exact component={About}></Route>
         <Route path="/examRound" exact component={ExamRound}></Route>
+        <Route path="/addRole" exact component={AddRole}></Route>
         {/* <Redirect from="*" to="/login"/> */}
       </Switch>
      </Container>
