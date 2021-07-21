@@ -19,13 +19,13 @@ function App() {
   library.add(fas);
   const dispathch = useDispatch();
 
-  useEffect(() => {
-      dispathch(showSpinner());
-      setTimeout(function() {
-        dispathch(hideSpinner())
-      }, 300);
+  // useEffect(() => {
+  //     dispathch(showSpinner());
+  //     setTimeout(function() {
+  //       dispathch(hideSpinner())
+  //     }, 300);
       
-    });
+  //   });
 
   return (
     

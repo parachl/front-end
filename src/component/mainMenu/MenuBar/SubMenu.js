@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as Rilcons from 'react-icons/ri';
 
 const SideBarLabel = styled.span`
-     margin=left: 16px;
+     margin-left: 16px;
      color: #f5f5f5;
 `
 
