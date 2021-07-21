@@ -49,7 +49,8 @@ const AddRole = () => {
   const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
   const [init, setInit] = useState('');
-  const [listRoleMenuAdd, setListRoleMenuAdd] = useState([]);
+  // const [listRoleMenuAdd, setListRoleMenuAdd] = useState([]);
+  let listRoleMenuAdd = [];
   const styleDivButton = {
     padding: '20px',
     display: 'flex',
@@ -90,6 +91,7 @@ const AddRole = () => {
 
   const submitAddRole= async (roleName,listRoleMenu) =>{
     const roleObj = {roleName:roleName,listRoleMenuObj:listRoleMenu};
+    console.log('roleObj',roleObj);
     const { status, data } = await api.post("/addRole", roleObj);
     console.log('data' , data);
     if(data === 'Success'){
@@ -210,7 +212,7 @@ const AddRole = () => {
         }
         setCheckedMenu([...listCheckedMenu.slice(0, index), g, ...listCheckedMenu.slice(index + 1)]);
       }
-
+      
     };
 
     function getCheckedMenu(menu) {
@@ -220,13 +222,16 @@ const AddRole = () => {
       }
     }
 
-    function updateListRoleMenuAdd(listRoleMenu) {
+    function updateListRoleMenuAdd() {
+      console.log('listRoleMenu update',listRoleMenu);
       if (listRoleMenu.length > 0) {
-      setListRoleMenuAdd(listRoleMenu);
+        listRoleMenuAdd = listRoleMenu;
+      // setListRoleMenuAdd(listRoleMenu);
       }
     }
-
-    updateListRoleMenuAdd(listRoleMenu);
+    updateListRoleMenuAdd();
+    console.log('listRoleMenuAdd',listRoleMenuAdd);
+    // 
 
     const [checkedMenuAll, setCheckedMenuAll] = useState({});
     const handleChangeMenuAll = (event) => {
@@ -333,7 +338,7 @@ const AddRole = () => {
         </Table>
       </TableContainer>
       <div style={styleDivButton}>
-        <Button variant="contained" color="primary" style={styleButton} onClick={submitAddRole(roleName,listRoleMenuAdd)}>
+        <Button variant="contained" color="primary" style={styleButton} onClick={() => submitAddRole(roleName,listRoleMenuAdd)}>
           Submit
         </Button>
         <Button variant="contained" color="secondary" style={styleButton}>

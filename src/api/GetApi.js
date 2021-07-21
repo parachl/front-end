@@ -4,10 +4,11 @@ const baseURL = "http://localhost:8080/demo/api";
 
 const defaultOption = {
     baseURL,
-    method:"GET",
+    method:["GET"],
     headers:{
         Accept:"application/json",
-        "Content-Type":"application/json; charset=utf-8"
+        "Content-Type":"application/json; charset=utf-8",
+        
     },
 };
 
