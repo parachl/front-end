@@ -7,7 +7,7 @@ import SubMenu from './SubMenu';
 const SideBar = ({ isOpen, toggle }) => {
 
   const menus = JSON.parse(localStorage.getItem('listMenu'));
-console.log('menus >>',menus);
+console.log('menus SideBar >>',menus);
   return (
     <div className={classNames("sidebar", { "is-open": isOpen })}>
       <div className="sidebar-header">

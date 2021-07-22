@@ -11,63 +11,62 @@ import { authenticationService } from '../../_services/authentication.service';
 const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    
+    localStorage.clear();
     const history = useHistory();
 
     let value = '';
 
     const login = () => {
-        // const menus = [
-        //     {
-        //       title: "Home",
-        //       icon: "home",
-        //       path: "/home",
-        //       action: null,
-        //       subMenu: [
-        //         {
-        //           title: "PageOne",
-        //           icon: "",
-        //           path: "/home/homeOne",
-        //           action:"AED",
+    //     const menus = [
+    //         {
+    //           title: "Home",
+    //           icon: "home",
+    //           path: "/home",
+    //           action: null,
+    //           subMenu: [
+    //             {
+    //               title: "PageOne",
+    //               icon: "",
+    //               path: "/home/homeOne",
+    //               action:"AED",
         
-        //         }, {
-        //           title: "Home2",
-        //           icon: "",
-        //           path: "/home/homeTwo",
-        //           action:"AED",
-        //         }
-        //       ]
-        //     },
-        //     {
-        //       title: "About",
-        //       icon: "id-card-alt",
-        //       path: "/about",
-        //       action:"V",
-        //       subMenu: null
-        //     },
-        //     {
-        //       title: "Portfolio",
-        //       icon: "image",
-        //       path: "/portfolio",
-        //       action:"V",
-        //       subMenu: null
-        //     },
-        //     {
-        //       title: "FAQ",
-        //       icon: "question",
-        //       path: "/fqa",
-        //       action:"AED",
-        //       subMenu: null
-        //     },
-        //     {
-        //       title: "Report",
-        //       icon: "paper-plane",
-        //       path: "/report",
-        //       action:"AED",
-        //       subMenu: null
-        //     },
-        //   ];
-    // setter
+    //             }, {
+    //               title: "Home2",
+    //               icon: "",
+    //               path: "/home/homeTwo",
+    //               action:"AED",
+    //             }
+    //           ]
+    //         },
+    //         {
+    //           title: "About",
+    //           icon: "id-card-alt",
+    //           path: "/about",
+    //           action:"V",
+    //           subMenu: null
+    //         },
+    //         {
+    //           title: "Portfolio",
+    //           icon: "image",
+    //           path: "/portfolio",
+    //           action:"V",
+    //           subMenu: null
+    //         },
+    //         {
+    //           title: "FAQ",
+    //           icon: "question",
+    //           path: "/fqa",
+    //           action:"AED",
+    //           subMenu: null
+    //         },
+    //         {
+    //           title: "Report",
+    //           icon: "paper-plane",
+    //           path: "/report",
+    //           action:"AED",
+    //           subMenu: null
+    //         },
+    //       ];
 
     // const listMenu = Object.keys(menus).map(function (key) {
     //     const menu = menus[key];

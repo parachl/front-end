@@ -25,6 +25,7 @@ const MainMenu = () => {
   const [data, setData] = useState({});
   
   const fetcData = async () => {
+    console.log('test test');
     const { status, data } = await api.get("/test");
 
     if (status === 200) {
