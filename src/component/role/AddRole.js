@@ -127,7 +127,7 @@ const AddRole = () => {
       if(listGroupRoleMenu[index].isChecked === true){
         if (menu.listMenu !== null && menu.listMenu.length > 0) {
           for (let i = 0; i < menu.listMenu.length; i++) {
-            objRoleArray[i] = { menuObj: menu.listMenu[i], roleObj: {}, roleRight: 'AED' }
+            objRoleArray[i] = { menuId: menu.listMenu[i].id, roleId: '', roleRight: 'AED' }
             objCheckedArray[i] = { isChecked: true, id: menu.listMenu[i].id }
           }
           setListRoleMenu(objRoleArray);
@@ -161,16 +161,16 @@ const AddRole = () => {
 
     function getRoleRight(menu) {
       if (listRoleMenu.length > 0) {
-        var index = listRoleMenu.findIndex((x) => x.menuObj.id === menu.id);
+        var index = listRoleMenu.findIndex((x) => x.menuId === menu.id);
         return listRoleMenu[index].roleRight;
       }
     }
 
     const handleChange = (event, param) => {
-      var index = listRoleMenu.findIndex((x) => x.menuObj.id === param.id);
+      var index = listRoleMenu.findIndex((x) => x.menuId === param.id);
       setValue(event.target.value);
       if (index === -1) {
-        setListRoleMenu([...listRoleMenu, { menuObj: param, roleObj: {}, roleRight: event.target.value }]);
+        setListRoleMenu([...listRoleMenu, { menuId: param.id, roleId: '', roleRight: event.target.value }]);
       } else {
         let g = listRoleMenu[index];
         g["roleRight"] = event.target.value;
@@ -179,7 +179,7 @@ const AddRole = () => {
     };
 
     const deleteRoleMenu = (id) => {
-      var index = listRoleMenu.findIndex((x) => x.menuObj.id === id);
+      var index = listRoleMenu.findIndex((x) => x.menuId === id);
       if (index !== -1) {
         let g = listRoleMenu[index];
         g["roleRight"] = "D";
@@ -189,7 +189,7 @@ const AddRole = () => {
     }
 
     const defaltRoleMenu = (id) => {
-      var index = listRoleMenu.findIndex((x) => x.menuObj.id === id);
+      var index = listRoleMenu.findIndex((x) => x.menuId === id);
       if (index !== -1) {
         let g = listRoleMenu[index];
         g["roleRight"] = "AED";

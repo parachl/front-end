@@ -6,6 +6,7 @@ import PageOne from "../pageOne/PageOne";
 import PageTwo from "../pageTwo/PageTwo";
 import ExamRound from "../Exam/ExamRound";
 import AddRole from "../role/AddRole";
+import AddUserRole from "../userRole/AddUserRole";
 import { Container } from "reactstrap";
 import classNames from "classnames";
 import Topbar from "./TopBar/TopBar";
@@ -63,6 +64,7 @@ const MainMenu = () => {
         <Route path="/about" exact component={About}></Route>
         <Route path="/examRound" exact component={ExamRound}></Route>
         <Route path="/addRole" exact component={AddRole}></Route>
+        <Route path="/addUserRole" exact component={AddUserRole}></Route>
         {/* <Redirect from="*" to="/login"/> */}
       </Switch>
      </Container>
