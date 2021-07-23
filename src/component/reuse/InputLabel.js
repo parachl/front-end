@@ -4,7 +4,7 @@ import { Col,Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap'
 import styles from './InputLabel.module.css';
 import PropsTypes from 'prop-types';
 
-export const InputLabel = ({ label, type, value, onChange }) => {
+export const InputLabelReuse = ({ label, type, value, onChange }) => {
 
     return (
         <Form>
@@ -18,14 +18,14 @@ export const InputLabel = ({ label, type, value, onChange }) => {
     );
 }
 
-InputLabel.defaultProps = {
+InputLabelReuse.defaultProps = {
     label: "",
     type: "text",
     value: "",
     onChange: () => { },
 }
 
-InputLabel.propsTypes = {
+InputLabelReuse.propsTypes = {
     label: PropsTypes.string,
     type: PropsTypes.string,
     value: PropsTypes.string,

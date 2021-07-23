@@ -25,9 +25,10 @@ import Paper from '@material-ui/core/Paper';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { RadioGroup, FormControlLabel, Radio } from '@material-ui/core';
-import { InputLabel } from '../reuse/InputLabel';
+import { InputLabelReuse } from '../reuse/InputLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
+
 
 const AddRole = () => {
   const useRowStyles = makeStyles({
@@ -315,7 +316,7 @@ const AddRole = () => {
               <FormGroup style={{ width: 380, padding: 15 }}>
                 {/* <Label className="form-group">Role Name :</Label> */}
                 {/* <input type="text" className="form-control" placeholder="" value="" /></FormGroup> */}
-                <InputLabel label="Role Name :" type="text" value={roleName}
+                <InputLabelReuse label="Role Name :" type="text" value={roleName}
                   onChange={(e) => {
                     setRoleName(e.target.value);
                   }} style={{ width: 180 }} />

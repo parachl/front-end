@@ -19,7 +19,7 @@ const SideBar = ({ isOpen, toggle }) => {
         <div className="side-menu">
           <Nav vertical className="list-unstyled pb-3">
             <p>Dummy Heading</p>
-            {menus.listGroupMenu.map((item, index) => {
+            {menus != null && menus.listGroupMenu.map((item, index) => {
               return (<SubMenu item={item} key={index} />
               )
             })
