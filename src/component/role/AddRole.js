@@ -96,7 +96,7 @@ const AddRole = () => {
     const { status, data } = await api.post("/addRole", roleObj);
     console.log('data' , data);
     if(data === 'Success'){
-      history.push("/main");
+      history.push("/listRole");
     }
   }
 

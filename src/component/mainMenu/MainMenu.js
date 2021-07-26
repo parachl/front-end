@@ -6,6 +6,7 @@ import PageOne from "../pageOne/PageOne";
 import PageTwo from "../pageTwo/PageTwo";
 import ExamRound from "../Exam/ExamRound";
 import AddRole from "../role/AddRole";
+import ListRole from "../role/ListRole";
 import AddUserRole from "../userRole/AddUserRole";
 import { Container } from "reactstrap";
 import classNames from "classnames";
@@ -18,7 +19,7 @@ import { authenticationService } from '../../_services/authentication.service';
 import api from '../../api/GetApi';
 
 const MainMenu = () => {
-  const [sidebarIsOpen, setSidebarOpen] = useState(true);
+  const [sidebarIsOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen(!sidebarIsOpen);
 
   const dispathch = useDispatch();
@@ -30,7 +31,7 @@ const MainMenu = () => {
     const { status, data } = await api.get("/test");
 
     if (status === 200) {
-         setData(data);
+         setData(JSON.stringify(data));
          localStorage.setItem('listMenu', JSON.stringify(data));
          console.log("data >>", data);
     } else {
@@ -39,20 +40,21 @@ const MainMenu = () => {
 }
 
   useEffect(() => {
-    fetcData();
+    
     dispathch(showSpinner());
+    fetcData();
     // authenticationService.getMenu();
     setTimeout(function() {
       dispathch(hideSpinner())
     }, 300);
     
-    
-  },[]);
+ 
+  },[]);   
 
   return (
     <BrowserRouter>
     <div className="Main wrapper">
-        <SideBar toggle={toggleSidebar} isOpen={sidebarIsOpen} />
+        <SideBar toggle={toggleSidebar} isOpen={sidebarIsOpen}/>
       <Container
         fluid
         className={classNames("content", { "is-open": sidebarIsOpen })}
@@ -63,6 +65,7 @@ const MainMenu = () => {
         <Route path="/home/homeTwo" exact component={PageTwo}></Route>
         <Route path="/about" exact component={About}></Route>
         <Route path="/examRound" exact component={ExamRound}></Route>
+        <Route path="/listRole" exact component={ListRole}></Route>
         <Route path="/addRole" exact component={AddRole}></Route>
         <Route path="/addUserRole" exact component={AddUserRole}></Route>
         {/* <Redirect from="*" to="/login"/> */}

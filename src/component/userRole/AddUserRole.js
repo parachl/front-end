@@ -25,16 +25,22 @@ import Select from '@material-ui/core/Select';
 import InputLabel from "@material-ui/core/InputLabel";
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
+import { get } from 'lodash';
 
 const AddUserRole = () => {
   const dispathch = useDispatch();
   const history = useHistory();
-  const menus = JSON.parse(localStorage.getItem('listMenu'));
   const [searchUser, setSearchUser] = useState('');
-  const [role, setRole] = useState({});
+  const [role, setRole] = useState('Select role');
+  const [listRole, setListRole] = useState([]);
+  const [dataUser, setDataUser] = useState([]);
+  const [userList, setUserList] = useState([]);
   let roleName = 'select role';
+  let rowsRole = [{}];
+  let users = [{}];
+
   const styleDivButton = {
-    width: 80,
+    width: '100%',
     padding: '20px',
     display: 'flex',
     justifyContent: 'center',
@@ -45,14 +51,59 @@ const AddUserRole = () => {
     margin: '10px',
   };
 
-  const initPage = (menu, action) => {
+  const fetcData = async () => {
+    const { status, data } = await api.get("/listRole");
+
+    if (status === 200) {
+      console.log('list role data > ', data);
+      if (data.listRoleObj !== null && data.listRoleObj.length > 0) {
+        for (let i = 0; i < data.listRoleObj.length; i++) {
+          rowsRole[i] = { roleName: data.listRoleObj[i].roleName, id: data.listRoleObj[i].id }
+          // objCheckedArray[i] = { isChecked: true, id: menu.listMenu[i].id }
+        }
+        setListRole(rowsRole);
+        // setListRoleMenu(objRoleArray);
+        // setCheckedMenu(objCheckedArray)
+      }
+      //  console.log("rowsRole >>", rowsRole);
+    } else {
+      alert('error');
+    }
+
+  }
+
+  const fetcDataUser = async () => {
+    const { status, data } = await api.get("/listUser");
+    console.log('statusUser > ', status);
+    console.log('dataUser > ', data);
+    if (status === 200) {
+      if (data.listUserObj !== null && data.listUserObj.length > 0) {
+        for (let i = 0; i < data.listUserObj.length; i++) {
+          users[i] = { userName: data.listUserObj[i].userName, id: data.listUserObj[i].id }
+          // objCheckedArray[i] = { isChecked: true, id: menu.listMenu[i].id }
+        }
+        setDataUser(users);
+        // setListRoleMenu(objRoleArray);
+        // setCheckedMenu(objCheckedArray)
+      }
+      console.log('users 111111> ', users);
+      //  console.log("rowsRole >>", rowsRole);
+    } else {
+      alert('error');
+    }
+  }
+
+  const initPage = () => {
     console.log('3');
     dispathch(showSpinner());
+    fetcData();
+    fetcDataUser();
     setTimeout(function () {
       dispathch(hideSpinner())
     }, 500);
 
     const result = AuthenService.checkPermission('addUserRole', 'AED');
+
 
     if (!result) {
       history.push("/main");
@@ -60,11 +111,40 @@ const AddUserRole = () => {
 
   }
 
+
   useEffect(() => {
-    initPage(menus);
+    initPage();
   }, []);
 
-  const submitAddRole = async () => {
+  console.log('users > ', users);
+  const submitAddUserRole = async () => {
+
+    if (role !== '' && dataUser.length > 0) {
+      let listUsers = [];
+      for(let j=0 ; j < dataUser.length; j++){
+        listUsers.push(dataUser[j].id);
+      }
+      const userRoleObj = { roleId: role, listUserId: listUsers };
+      console.log('userRoleObj', userRoleObj);
+      const { status, data } = await api.post("/addUserRole", userRoleObj);
+      console.log('data' , data);
+      if(data === 'Success'){
+        history.push("/main");
+      }
+    }else{
+      alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+    }
+    
+  }
+
+  const submitSelectUser = (id) => {
+
+    var index = dataUser.findIndex((x) => x.id === id);
+    if (index !== -1) {
+      let g = dataUser[index];
+
+      setUserList([...userList.slice(0, index), g, ...userList.slice(index + 1)]);
+    }
     const userRoleObj = {};
     console.log('userRoleObj', userRoleObj);
     // const { status, data } = await api.post("/addUserRole", userRoleObj);
@@ -73,9 +153,11 @@ const AddUserRole = () => {
     //   history.push("/main");
     // }
   }
+
 
   const submitSearch = async () => {
     const userRoleObj = {};
+
     console.log('userRoleObj', userRoleObj);
     // const { status, data } = await api.post("/addUserRole", userRoleObj);
     // console.log('data' , data);
@@ -84,38 +166,9 @@ const AddUserRole = () => {
     // }
   }
 
-  const handleChangeRole = (role) => {
-
+  const handleChangeRole = (event) => {
+    setRole(event.target.value);
   };
-
-
-  const columns = [
-    { id: 'name', label: 'Name', minWidth: 100 },
-    { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
-
-  ];
-
-  function createData(name, code) {
-    return { name, code };
-  }
-
-  const rows = [
-    createData('India', 'IN'),
-    createData('China', 'CN'),
-    createData('Italy', 'IT'),
-    createData('United States', 'US'),
-    createData('Canada', 'CA'),
-    createData('Australia', 'AU'),
-    createData('Germany', 'DE'),
-    createData('Ireland', 'IE'),
-    createData('Mexico', 'MX'),
-    createData('Japan', 'JP'),
-    createData('France', 'FR'),
-    createData('United Kingdom', 'GB'),
-    createData('Russia', 'RU'),
-    createData('Nigeria', 'NG'),
-    createData('Brazil', 'BR'),
-  ];
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -124,6 +177,7 @@ const AddUserRole = () => {
 
     },
     container: {
+      minHeight: 440,
       maxHeight: 440,
 
     },
@@ -232,29 +286,31 @@ const AddUserRole = () => {
 
               </TableRow>
               <TableRow>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ minWidth: column.minWidth }}
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
+                <TableCell>
+                  <p>UserId</p>
+                </TableCell>
+                <TableCell>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+              {dataUser.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => {
+                console.log('user html >.', user.userName);
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
+                  <TableRow tabIndex={-1} key={user.id}>
+                    <TableCell>{user.userName}</TableCell>
+                    <TableCell>
+                      <Button variant="contained" color="primary" style={styleButton} onClick={() => submitSelectUser(user.id)}>
+                        Add
+                      </Button></TableCell>
+                    {/* {columns.map((column) => {
                       const value = row[column.id];
                       return (
                         <TableCell key={column.id} align={column.align}>
                           {column.format && typeof value === 'number' ? column.format(value) : value}
                         </TableCell>
                       );
-                    })}
+                    })} */}
                   </TableRow>
                 );
               })}
@@ -264,7 +320,7 @@ const AddUserRole = () => {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={rows.length}
+          count={rowsRole.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -295,36 +351,30 @@ const AddUserRole = () => {
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>
-                {/* <FormGroup style={{ width: 400, padding: 15 }}>
-                  <Button variant="contained" color="primary" style={styleButton} onClick={(e) => submitSearch(e)} className={classes.buttonDelete}>
-          Search
-        </Button>
-              </FormGroup> */}
-              </TableRow>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ minWidth: column.minWidth }}
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
+                <TableCell style={{ width: 450 }}>
+                  <p>UserId</p>
+                </TableCell>
+                <TableCell>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+              {userList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
+                  <TableRow tabIndex={-1} key={user.id}>
+                    <TableCell>{user.userName}</TableCell>
+                    <TableCell>
+                      <Button variant="contained" color="primary" style={styleButton} onClick={() => submitSelectUser(user.id)}>
+                        Delete
+                      </Button></TableCell>
+                    {/* {columns.map((column) => {
                       const value = row[column.id];
                       return (
                         <TableCell key={column.id} align={column.align}>
                           {column.format && typeof value === 'number' ? column.format(value) : value}
                         </TableCell>
                       );
-                    })}
+                    })} */}
                   </TableRow>
                 );
               })}
@@ -334,7 +384,7 @@ const AddUserRole = () => {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={rows.length}
+          count={rowsRole.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -346,28 +396,19 @@ const AddUserRole = () => {
 
   const SimpleSelect = () => {
     const classes = useStyles();
-    const [age, setAge] = React.useState('');
-
-    const handleChange = (event) => {
-      setAge(event.target.value);
-    };
-
     return (
       <div className={classes.selectRole}><FormControl variant="outlined" className={classes.formControl}>
         <InputLabel id="demo-simple-select-outlined-label">Role</InputLabel>
         <Select
           labelId="demo-simple-select-outlined-label"
           id="demo-simple-select-outlined"
-          value={roleName}
-          onChange={(event) => handleChangeRole(role)}
-          label="Age"
+          value={role}
+          onChange={(event) => handleChangeRole(event)}
+          label="Role"
         >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
+          {listRole !== null && listRole.map((role, index) => (
+            <MenuItem value={role.id}>{role.roleName}</MenuItem>
+          ))}
         </Select>
       </FormControl></div>
     );
@@ -379,6 +420,14 @@ const AddUserRole = () => {
       <div class="row" className={classes.boxTable}>
         <UserList></UserList>
         <SelectUser></SelectUser>
+      </div>
+      <div style={styleDivButton}>
+        <Button variant="contained" color="primary" style={styleButton} onClick={() => submitAddUserRole()}>
+          Submit
+        </Button>
+        <Button variant="contained" color="secondary" style={styleButton}>
+          Cancel
+        </Button>
       </div>
     </PageBox>
   );
