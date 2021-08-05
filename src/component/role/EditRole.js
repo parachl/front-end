@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { showSpinner } from '../../action/Constants.action';
 import { hideSpinner } from '../../action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
 import styled from "styled-components";
 import { FormGroup, Label } from 'reactstrap';
@@ -29,10 +29,8 @@ import { RadioGroup, FormControlLabel, Radio } from '@material-ui/core';
 import { InputLabelReuse } from '../reuse/InputLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
-// import Row from './Rows';
 
-
-const AddRole = () => {
+const EditRole = (roleObj) => {
   const useRowStyles = makeStyles({
     root: {
       '& > *': {
@@ -48,13 +46,12 @@ const AddRole = () => {
 
   const [listGroupRoleMenu, setListGroupRoleMenu] = useState([]);
   const [roleName, setRoleName] = useState('');
+  const location = useLocation();
   const [checkedGroupMenu, setCheckedGroupMenu] = useState([]);
   const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
   const [init, setInit] = useState('');
-  // const [listRoleMenuAdd, setListRoleMenuAdd] = useState([]);
-  // const [listRoleMenuAdd, setListRoleMenuAdd] = useState([]);
-
+  const [dataRole, setDataRole] = useState({});
 
   const [isChecked, setIsChecked] = useState([]);
   const [listCheckedMenu, setCheckedMenu] = useState([]);
@@ -73,57 +70,121 @@ const AddRole = () => {
     margin: '10px',
   };
 
-  const initPage = (menu) => {
+  const fetcDataFindRole = async (roleId) => {
+    const { status, data } = await api.get("/role/findById?id=" + roleId);
+
+    if (status === 200) {
+      console.log('list role data > ', data);
+      console.log('menus > ', menus);
+      const objArray = [];
+      const openArray = [];
+      const objRoleArray = [];
+      const objCheckedArray = [];
+      setRoleName(data.roleName);
+      setDataRole(data);
+      console.log('fetcDataFindRole menus.listGroupMenu>>', menus.listGroupMenu);
+      for (let i = 0; i < menus.listGroupMenu.length; i++) {
+        console.log('fetcDataFindRole menus.listGroupMenu[i].id >>', menus.listGroupMenu[i].id);
+        var index = data.listRoleMenuObj.findIndex((x) => x.menuObj.groupMenuId === menus.listGroupMenu[i].id);
+        console.log('fetcDataFindRole index >>', index);
+        if (index !== -1) {
+          console.log('fetcDataFindRole in >>', menus.listGroupMenu[i].id);
+          objArray[i] = { id: menus.listGroupMenu[i].id, isChecked: true };
+          openArray[i] = { id: menus.listGroupMenu[i].id, open: false };
+          if (menus.listGroupMenu[i].listMenu !== null) {
+            for (let b = 0; b < menus.listGroupMenu[i].listMenu.length; b++) {
+              for (let c = 0; c < data.listRoleMenuObj.length; c++) {
+                if (menus.listGroupMenu[i].listMenu[b].id === data.listRoleMenuObj[c].menuId) {
+                  objRoleArray.push({ groupId: menus.listGroupMenu[i].id, menuId: data.listRoleMenuObj[c].menuId, roleId: data.listRoleMenuObj[c].roleId, roleRight: data.listRoleMenuObj[c].roleRight });
+                  objCheckedArray.push({ isChecked: true, id: menus.listGroupMenu[i].listMenu[b].id });
+                } 
+                var indexNotIn = data.listRoleMenuObj.findIndex((x) => x.menuId === menus.listGroupMenu[i].listMenu[b].id);
+                if(indexNotIn === -1){
+                  objRoleArray.push({ groupId: menus.listGroupMenu[i].id, menuId: menus.listGroupMenu[i].listMenu[b].id, roleId: '', roleRight: 'D' });
+                  objCheckedArray.push({ isChecked: false, id: menus.listGroupMenu[i].listMenu[b].id });
+                }
+              }
+            }
+          }
+        } else {
+          objArray[i] = { id: menus.listGroupMenu[i].id, isChecked: false };
+          openArray[i] = { id: menus.listGroupMenu[i].id, open: false };
+          if (menus.listGroupMenu[i].listMenu !== null) {
+            for (let b = 0; b < menus.listGroupMenu[i].listMenu.length; b++) {
+              objRoleArray.push({ groupId: menus.listGroupMenu[i].id, menuId: menus.listGroupMenu[i].listMenu[b].id, roleId: '', roleRight: 'D' });
+              objCheckedArray.push({ isChecked: false, id: menus.listGroupMenu[i].listMenu[b].id });
+            }
+          }
+
+        }
+
+      }
+      console.log('fetcDataFindRole objCheckedArray >>', objCheckedArray);
+      setListOpen(openArray);
+      setListGroupRoleMenu(objArray);
+      setListRoleMenu(objRoleArray);
+      setCheckedMenu(objCheckedArray);
+      setCheckedGroupMenu(objArray);
+    } else {
+      alert('error');
+    }
+
+  }
+
+  const initPage = (menu, roleId) => {
     console.log('3');
     dispathch(showSpinner());
     setTimeout(function () {
       dispathch(hideSpinner())
     }, 500);
 
-    const result = AuthenService.checkPermission('AddRole', 'AED');
+    const result = AuthenService.checkPermission('EditRole', 'AED');
 
     if (!result) {
       history.push("/main");
     }
-    const objArray = [];
-    console.log(' menu initPage>', menu);
-    const objRoleArray = [];
-    const objCheckedArray = [];
-    const openArray = [];
-    for (let i = 0; i < menu.listGroupMenu.length; i++) {
-      objArray[i] = { id: menus.listGroupMenu[i].id, isChecked: false };
-      openArray[i] = { id: menus.listGroupMenu[i].id, open: false };
-      if (menu.listGroupMenu[i].listMenu !== null) {
-        for (let b = 0; b < menu.listGroupMenu[i].listMenu.length; b++) {
-          objRoleArray.push({groupId: menu.listGroupMenu[i].id, menuId: menu.listGroupMenu[i].listMenu[b].id, roleId: '', roleRight: 'D' });
-          objCheckedArray.push({ isChecked: false, id: menu.listGroupMenu[i].listMenu[b].id });
-        }
-      }
-    }
-    setListOpen(openArray);
-    setListGroupRoleMenu(objArray);
-    setListRoleMenu(objRoleArray);
-    setCheckedMenu(objCheckedArray);
-    setCheckedGroupMenu(objArray);
+    fetcDataFindRole(roleId);
 
   }
 
   useEffect(() => {
     console.log('2');
-    initPage(menus);
+    initPage(menus, location.state.id);
 
   }, []);
 
+  const submitEditRole = async (roleName, listGroupRoleMenu) => {
+    let ArrayRoleMenu = [];
+    for (let i = 0; i < checkedGroupMenu.length; i++) {
+      if (checkedGroupMenu[i].isChecked === true) {
+        for (let f = 0; f < listRoleMenu.length; f++) {
+          if (listRoleMenu[f].groupId === checkedGroupMenu[i].id) {
+            if (listRoleMenu[f].roleRight !== 'D') {
+              ArrayRoleMenu.push(listRoleMenu[f]);
+            }
+          }
+        }
+      }
+    }
+    const roleObj = {id: dataRole.id, roleName: roleName, listRoleMenuObj: ArrayRoleMenu };
+    console.log('roleObj', roleObj);
+    const { status, data } = await api.post("/role/editRole", roleObj);
+    console.log('data', data);
+    if (data === 'Success') {
+      history.push("/listRole");
+    }
+  }
+
   const submitAddRole = async (roleName, listGroupRoleMenu) => {
     let ArrayRoleMenu = [];
-    for(let i = 0; i < checkedGroupMenu.length; i++){
-      if(checkedGroupMenu[i].isChecked === true){
+    for (let i = 0; i < checkedGroupMenu.length; i++) {
+      if (checkedGroupMenu[i].isChecked === true) {
         for (let f = 0; f < listRoleMenu.length; f++) {
-                if(listRoleMenu[f].groupId === checkedGroupMenu[i].id){
-                  if(listRoleMenu[f].roleRight !== 'D'){
-                    ArrayRoleMenu.push(listRoleMenu[f]);
-                  }
-                }
+          if (listRoleMenu[f].groupId === checkedGroupMenu[i].id) {
+            if (listRoleMenu[f].roleRight !== 'D') {
+              ArrayRoleMenu.push(listRoleMenu[f]);
+            }
+          }
         }
       }
     }
@@ -146,7 +207,7 @@ const AddRole = () => {
       let g = checkedGroupMenu[index];
       if (g["isChecked"] === true) {
         g["isChecked"] = false;
-        getOpen(index,false);
+        getOpen(index, false);
       } else {
         g["isChecked"] = true;
       }
@@ -156,9 +217,14 @@ const AddRole = () => {
   }
 
   function getRoleRight(menu) {
+    console.log('getRoleRight listRoleMenu>', listRoleMenu);
     if (listRoleMenu.length > 0) {
       var index = listRoleMenu.findIndex((x) => x.menuId === menu.id);
-      return listRoleMenu[index].roleRight;
+      if(index > -1){
+        return listRoleMenu[index].roleRight;
+      }else{
+        return '';
+      }
     }
   }
 
@@ -167,7 +233,7 @@ const AddRole = () => {
     if (checkedGroupMenu.length > 0) {
       console.log('checkedGroupMenu >', checkedGroupMenu);
       return checkedGroupMenu[index].isChecked;
-    }else{
+    } else {
       return false;
     }
   }
@@ -177,20 +243,20 @@ const AddRole = () => {
     console.log('getCheckedMenu listCheckedMenu>', listCheckedMenu);
     var index = listCheckedMenu.findIndex((x) => x.id === menu.id);
     if (listCheckedMenu.length > 0 && index > -1) {
-      console.log('getCheckedMenu listCheckedMenu',listCheckedMenu);
+      console.log('getCheckedMenu listCheckedMenu', listCheckedMenu);
       return listCheckedMenu[index].isChecked;
-    }else{
-      return false;
+    } else {
+      return true;
     }
   }
 
-  function getOpen(index,fix) {
+  function getOpen(index, fix) {
     if (listOpen.length > 0) {
       let g = listOpen[index];
-      if(fix !== null && fix === false){
+      if (fix !== null && fix === false) {
         g["open"] = false;
         setListOpen([...listOpen.slice(0, index), g, ...listOpen.slice(index + 1)]);
-      }else{
+      } else {
         if (g["open"] === true) {
           g["open"] = false;
           setListOpen([...listOpen.slice(0, index), g, ...listOpen.slice(index + 1)]);
@@ -199,7 +265,7 @@ const AddRole = () => {
           setListOpen([...listOpen.slice(0, index), g, ...listOpen.slice(index + 1)]);
         }
       }
-      
+
     }
   }
   console.log('listOpen out', listOpen);
@@ -291,7 +357,7 @@ const AddRole = () => {
                   inputProps={{ 'aria-label': 'secondary checkbox' }}
                 /></TableCell>
                   <TableCell style={{ width: 150 }}>
-                    {menuGroup.listMenu !== null && menuGroup.listMenu.length > 0 && <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!getOpen(index))} disabled={!get(checkedGroupMenu[index],'isChecked',false)}>
+                    {menuGroup.listMenu !== null && menuGroup.listMenu.length > 0 && <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!getOpen(index))} disabled={!get(checkedGroupMenu[index], 'isChecked', false)}>
                       {get(listOpen[index], 'open', false) ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                     </IconButton>}
                   </TableCell>
@@ -348,7 +414,7 @@ const AddRole = () => {
         </Table>
       </TableContainer>
       <div style={styleDivButton}>
-        <Button variant="contained" color="primary" style={styleButton} onClick={() => submitAddRole(roleName, listGroupRoleMenu)}>
+        <Button variant="contained" color="primary" style={styleButton} onClick={() => submitEditRole(roleName, listGroupRoleMenu)}>
           Submit
         </Button>
         <Button variant="contained" color="secondary" style={styleButton} onClick={() => cancel()}>
@@ -359,4 +425,4 @@ const AddRole = () => {
   );
 }
 
-export default AddRole;
+export default EditRole;

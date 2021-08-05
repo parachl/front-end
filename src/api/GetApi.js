@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = "http://localhost:8080/demo/api";
+const baseURL = "http://localhost:8080/demo/";
 
 const defaultOption = {
     baseURL,

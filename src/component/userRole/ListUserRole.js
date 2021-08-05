@@ -31,12 +31,24 @@ import Button from '@material-ui/core/Button';
 import TablePagination from '@material-ui/core/TablePagination';
 
 
-const ListRole = () => {
+const ListUserRole = () => {
   const useRowStyles = makeStyles({
     root: {
       '& > *': {
         borderBottom: 'unset',
       },
+    },
+    scrollBar: {
+      '&::-webkit-scrollbar': {
+        width: '0.4em'
+      },
+      '&::-webkit-scrollbar-track': {
+        '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)'
+      },
+      '&::-webkit-scrollbar-thumb': {
+        backgroundColor: 'rgba(0,0,0,.1)',
+        outline: '1px solid slategrey'
+      }
     },
   });
   const dispathch = useDispatch();
@@ -51,8 +63,8 @@ const ListRole = () => {
   const [open, setOpen] = React.useState(false);
   const classes = useRowStyles();
   const [init, setInit] = useState('');
-  let rowsRole = [{}];
-  const [listRole, setListRole] = useState([]);
+  let userRoles = [{}];
+  const [listUserRole, setListUserRole] = useState([]);
   // const [listRoleMenuAdd, setListRoleMenuAdd] = useState([]);
   let listRoleMenuAdd = [];
   const styleDivButton = {
@@ -65,7 +77,7 @@ const ListRole = () => {
   const styleButtonAdd = {
     float: 'right',
     marginRight: '43px',
-    marginBottom: '20px',
+    marginBottom:'20px',
   };
 
   const styleButton = {
@@ -73,20 +85,20 @@ const ListRole = () => {
   };
 
   const fetcData = async () => {
-    const { status, data } = await api.get("/role/listRole");
+    const { status, data } = await api.get("/userRole/listUserRole");
 
     if (status === 200) {
       console.log('list role data > ', data);
-      if (data.listRoleObj !== null && data.listRoleObj.length > 0) {
-        for (let i = 0; i < data.listRoleObj.length; i++) {
-          rowsRole[i] = { roleName: data.listRoleObj[i].roleName, id: data.listRoleObj[i].id }
+      if (data.listUserRoleObj !== null && data.listUserRoleObj.length > 0) {
+        for (let i = 0; i < data.listUserRoleObj.length; i++) {
+          userRoles[i] = { roleName: data.listUserRoleObj[i].roleObj.roleName , userName:data.listUserRoleObj[i].userObj.userName, groupId: data.listUserRoleObj[i].groupId }
           // objCheckedArray[i] = { isChecked: true, id: menu.listMenu[i].id }
         }
-        setListRole(rowsRole);
+        setListUserRole(userRoles);
         // setListRoleMenu(objRoleArray);
         // setCheckedMenu(objCheckedArray)
-      }
-      //  console.log("rowsRole >>", rowsRole);
+       }
+       console.log("userRoles >>", userRoles);
     } else {
       alert('error');
     }
@@ -94,24 +106,24 @@ const ListRole = () => {
   }
 
   const initPage = () => {
-    //   console.log('3');
-    //   dispathch(showSpinner());
-    //   setTimeout(function () {
-    //     dispathch(hideSpinner())
-    //   }, 500);
+  //   console.log('3');
+  //   dispathch(showSpinner());
+  //   setTimeout(function () {
+  //     dispathch(hideSpinner())
+  //   }, 500);
 
-    const result = AuthenService.checkPermission('ListRole', 'AED');
+    const result = AuthenService.checkPermission('ListUserRole', 'AED');
 
-    //   if (!result) {
-    //     history.push("/main");
-    //   }
-    //   const objArray = [];
-    //   console.log(' menu initPage>', menu);
-    //   for (let i = 0; i < menu.listGroupMenu.length; i++) {
-    //     objArray[i] = { id: menu.listGroupMenu[i].id, isChecked: false };
+    if (!result) {
+      history.push("/main");
+    }
+  //   const objArray = [];
+  //   console.log(' menu initPage>', menu);
+  //   for (let i = 0; i < menu.listGroupMenu.length; i++) {
+  //     objArray[i] = { id: menu.listGroupMenu[i].id, isChecked: false };
 
-    //   }
-    //   setListGroupRoleMenu(objArray);
+  //   }
+  //   setListGroupRoleMenu(objArray);
 
   }
 
@@ -120,19 +132,19 @@ const ListRole = () => {
     fetcData();
   }, []);
 
-  const editUser = (id) => {
-    // const { status, data } = await api.post("/addUserRole", userRoleObj);
+  const editUser = (groupId) => {
+    // const { status, data } = await api.post("/findById", userRoleObj);
     // console.log('data' , data);
     // if(data === 'Success'){
-    history.push("/editRole", { id: id });
+      history.push("/editUserRole",{groupId:groupId});
     // }
   }
 
-  const addRole = () => {
+  const addUserRole = () => {
     // const { status, data } = await api.post("/addUserRole", userRoleObj);
     // console.log('data' , data);
     // if(data === 'Success'){
-    history.push("/addRole");
+      history.push("/addUserRole");
     // }
   }
 
@@ -149,24 +161,27 @@ const ListRole = () => {
 
   return (
     <PageBox>
-      <div><tableRow style={{ width: 1080, fontSize: 32, padding: 10 }}>List Role </tableRow></div>
-      <Button variant="contained" color="primary" style={styleButtonAdd} onClick={() => addRole()}>
-        Add
-      </Button>
+      <div style={{ width: 980, fontSize: 32,padding:10 }}>List User Role</div><Button variant="contained" color="primary" style={styleButtonAdd} onClick={() => addUserRole()}>
+                        Add
+                      </Button>
       <TableContainer className={classes.container} style={{ height: 600}}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
+            <tableRow > </tableRow>
             <TableRow>
+              <TableCell style={{ width: 320, fontSize: 18 }}>
+                <p>User Name</p>
+              </TableCell>
               <TableCell style={{ width: 320, fontSize: 18 }}>
                 <p>Role Name</p>
               </TableCell>
-              <TableCell style={{ width: 320, fontSize: 18 }}>
+              <TableCell style={{ width: 320 , fontSize: 18}}>
                 <p>Create Date</p>
               </TableCell>
               <TableCell style={{ width: 320, fontSize: 18 }}>
                 <p>Create By</p>
               </TableCell>
-              <TableCell style={{ width: 320, fontSize: 18 }}>
+              <TableCell style={{ width: 320 , fontSize: 18}}>
                 <p>Update Date</p>
               </TableCell>
               <TableCell style={{ width: 320, fontSize: 18 }}>
@@ -176,17 +191,18 @@ const ListRole = () => {
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            {listRole.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((role) => {
+          <TableBody style={{ height: 600}}>
+            {listUserRole.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((userRole) => {
               return (
-                <TableRow tabIndex={-1} key={role.id}>
-                  <TableCell>{role.roleName}</TableCell>
-                  <TableCell>{role.roleName}</TableCell>
-                  <TableCell>{role.roleName}</TableCell>
-                  <TableCell>{role.roleName}</TableCell>
-                  <TableCell>{role.roleName}</TableCell>
+                <TableRow tabIndex={-1} key={userRole.id}>
+                  <TableCell>{userRole.userName}</TableCell>
+                  <TableCell>{userRole.roleName}</TableCell>
+                  <TableCell>{userRole.roleName}</TableCell>
+                  <TableCell>{userRole.roleName}</TableCell>
+                  <TableCell>{userRole.roleName}</TableCell>
+                  <TableCell>{userRole.roleName}</TableCell>
                   <TableCell>
-                    <Button variant="contained" color="primary" style={styleButton} onClick={() => editUser(role.id)}>
+                    <Button variant="contained" color="primary" style={styleButton} onClick={() => editUser(userRole.groupId)}>
                       Edit
                     </Button></TableCell>
                   {/* {columns.map((column) => {
@@ -206,7 +222,7 @@ const ListRole = () => {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={listRole.length}
+        count={listUserRole.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -216,4 +232,4 @@ const ListRole = () => {
   );
 }
 
-export default ListRole;
+export default ListUserRole;

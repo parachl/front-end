@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { showSpinner } from '../../action/Constants.action';
 import { hideSpinner } from '../../action/Constants.action';
 import { AuthenService } from '../../_services/authen.service';
-import { useHistory } from 'react-router-dom';
+import { useHistory,useLocation } from 'react-router-dom';
 import { PageBox } from '../reuse/PageBox';
 import api from "../../api/GetApi";
 
@@ -27,9 +27,10 @@ import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import { get } from 'lodash';
 
-const AddUserRole = () => {
+const EditUserRole = () => {
   const dispathch = useDispatch();
   const history = useHistory();
+  const location = useLocation();
   const [searchUser, setSearchUser] = useState('');
   const [role, setRole] = useState('Select role');
   const [listRole, setListRole] = useState([]);
@@ -49,6 +50,141 @@ const AddUserRole = () => {
 
   const styleButton = {
     margin: '10px',
+  };
+
+  const fetcData = async () => {
+    const { status, data } = await api.get("/role/listRole");
+
+    if (status === 200) {
+      console.log('list role data > ', data);
+      if (data.listRoleObj !== null && data.listRoleObj.length > 0) {
+        for (let i = 0; i < data.listRoleObj.length; i++) {
+          rowsRole[i] = { roleName: data.listRoleObj[i].roleName, id: data.listRoleObj[i].id }
+        }
+        setListRole(rowsRole);
+      }
+    } else {
+      alert('error');
+    }
+
+  }
+
+  const fetcDataUser = async () => {
+    const { status, data } = await api.get("/user/listUser");
+    console.log('statusUser > ', status);
+    console.log('dataUser > ', data);
+    if (status === 200) {
+      if (data.listUserObj !== null && data.listUserObj.length > 0) {
+        for (let i = 0; i < data.listUserObj.length; i++) {
+          users[i] = { userName: data.listUserObj[i].userName, id: data.listUserObj[i].id }
+        }
+        setDataUser(users);
+      }
+    } else {
+      alert('error');
+    }
+  }
+
+  const fetcDataFindUserRole = async (groupId) => {
+    console.log('groupId > ', groupId);
+    const { status, data } = await api.get("/userRole/findById?groupId=" + groupId);
+    let userArray = [{}];
+    if (status === 200) {
+      console.log('list userRole data > ', data);
+      if (data.listUserRoleObj !== null && data.listUserRoleObj.length > 0) {
+        for (let i = 0; i < data.listUserRoleObj.length; i++) {
+          userArray[i] = { userName: data.listUserRoleObj[i].userObj.userName, id: data.listUserRoleObj[i].userObj.id }
+        }
+        setRole(data.listUserRoleObj[0].roleId);
+        setUserList(userArray);
+      }
+
+    } else {
+      alert('error');
+    }
+
+  }
+
+  
+console.log('userList >>',userList);
+
+  function cancel() {
+    history.push("/listUserRole");
+  }
+
+  const initPage = (groupId) => {
+    console.log('3');
+    dispathch(showSpinner());
+    fetcData();
+    fetcDataUser();
+    fetcDataFindUserRole(groupId);
+    setTimeout(function () {
+      dispathch(hideSpinner())
+    }, 500);
+
+    const result = AuthenService.checkPermission('EditUserRole', 'AED');
+ console.log('result >',result);
+    if (!result) {
+      history.push("/main");
+    }
+
+  }
+
+
+  useEffect(() => {
+    initPage(location.state.groupId);
+  }, []);
+
+  const submitEditUserRole = async () => {
+
+    if (role !== '' && userList.length > 0) {
+      let listUsers = [];
+      for(let j=0 ; j < userList.length; j++){
+        listUsers.push(userList[j].id);
+      }
+      const userRoleObj = { roleId: role, listUserId: listUsers,groupId:location.state.groupId };
+      console.log('userRoleObj', userRoleObj);
+      const { status, data } = await api.post("/userRole/editUserRole", userRoleObj);
+      console.log('data' , data);
+      if(data === 'Success'){
+        history.push("/listUserRole");
+      }
+    }else{
+      alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+    }
+    
+  }
+
+  const submitSelectUser = (id) => {
+
+    var index = dataUser.findIndex((x) => x.id === id);
+    if (index !== -1) {
+      let g = dataUser[index];
+      setUserList([...userList.slice(0, index), g, ...userList.slice(index + 1)]);
+    }
+  }
+
+  const deleteSelectUser = (id) => {
+    var index = userList.findIndex((x) => x.id === id);
+    console.log('index delete >>',index);
+    if (index !== -1) {
+      setUserList([...userList.slice(0, index),...userList.slice(index+1, 1), ...userList.slice(index + 1)]);
+    }
+  }
+
+  const submitSearch = async () => {
+    const userRoleObj = {};
+
+    console.log('userRoleObj', userRoleObj);
+    // const { status, data } = await api.post("/addUserRole", userRoleObj);
+    // console.log('data' , data);
+    // if(data === 'Success'){
+    //   history.push("/main");
+    // }
+  }
+
+  const handleChangeRole = (event) => {
+    setRole(event.target.value);
   };
 
   const useStyles = makeStyles((theme) => ({
@@ -124,128 +260,6 @@ const AddUserRole = () => {
 
 
   }));
-
-  const fetcData = async () => {
-    const { status, data } = await api.get("/role/listRole");
-
-    if (status === 200) {
-      console.log('list role data > ', data);
-      if (data.listRoleObj !== null && data.listRoleObj.length > 0) {
-        for (let i = 0; i < data.listRoleObj.length; i++) {
-          rowsRole[i] = { roleName: data.listRoleObj[i].roleName, id: data.listRoleObj[i].id }
-          // objCheckedArray[i] = { isChecked: true, id: menu.listMenu[i].id }
-        }
-        setListRole(rowsRole);
-        // setListRoleMenu(objRoleArray);
-        // setCheckedMenu(objCheckedArray)
-      }
-      //  console.log("rowsRole >>", rowsRole);
-    } else {
-      alert('error');
-    }
-
-  }
-
-  const fetcDataUser = async () => {
-    const { status, data } = await api.get("/user/listUser");
-    console.log('statusUser > ', status);
-    console.log('dataUser > ', data);
-    if (status === 200) {
-      if (data.listUserObj !== null && data.listUserObj.length > 0) {
-        for (let i = 0; i < data.listUserObj.length; i++) {
-          users[i] = { userName: data.listUserObj[i].userName, id: data.listUserObj[i].id }
-          // objCheckedArray[i] = { isChecked: true, id: menu.listMenu[i].id }
-        }
-        setDataUser(users);
-        // setListRoleMenu(objRoleArray);
-        // setCheckedMenu(objCheckedArray)
-      }
-      console.log('users 111111> ', users);
-      //  console.log("rowsRole >>", rowsRole);
-    } else {
-      alert('error');
-    }
-  }
-
-  const initPage = () => {
-    console.log('3');
-    dispathch(showSpinner());
-    fetcData();
-    fetcDataUser();
-    setTimeout(function () {
-      dispathch(hideSpinner())
-    }, 500);
-
-    const result = AuthenService.checkPermission('AddUserRole', 'AED');
-
-    if (!result) {
-      history.push("/main");
-    }
-
-  }
-
-  useEffect(() => {
-    initPage();
-  }, []);
-
-  const submitAddUserRole = async () => {
-
-    if (role !== '' && userList.length > 0) {
-      let listUsers = [];
-      for(let j=0 ; j < userList.length; j++){
-        listUsers.push(userList[j].id);
-      }
-      const userRoleObj = { roleId: role, listUserId: listUsers };
-      console.log('userRoleObj', userRoleObj);
-      const { status, data } = await api.post("/userRole/addUserRole", userRoleObj);
-      console.log('data' , data);
-      if(data === 'Success'){
-        history.push("/listUserRole");
-      }
-    }else{
-      alert('กรุณากรอกข้อมูลให้ครบถ้วน');
-    }
-    
-  }
-
-  const submitSelectUser = (id) => {
-
-    var index = dataUser.findIndex((x) => x.id === id);
-    if (index !== -1) {
-      let g = dataUser[index];
-      setUserList([...userList.slice(0, index), g, ...userList.slice(index + 1)]);
-    }
-  }
-
-  const deleteSelectUser = (id) => {
-    var index = userList.findIndex((x) => x.id === id);
-    console.log('index delete >>',index);
-    if (index !== -1) {
-      setUserList([...userList.slice(0, index),...userList.slice(index+1, 1), ...userList.slice(index + 1)]);
-    }
-  }
-console.log('userList >>',userList);
-
-  const submitSearch = async () => {
-    const userRoleObj = {};
-
-    console.log('userRoleObj', userRoleObj);
-    // const { status, data } = await api.post("/addUserRole", userRoleObj);
-    // console.log('data' , data);
-    // if(data === 'Success'){
-    //   history.push("/main");
-    // }
-  }
-
-  const handleChangeRole = (event) => {
-    setRole(event.target.value);
-  };
-
-  function cancel() {
-    history.push("/listUserRole");
-  }
-
-  
 
   const classes = useStyles();
   const SelectUser = () => {
@@ -425,7 +439,7 @@ console.log('userList >>',userList);
         <SelectUser></SelectUser>
       </div>
       <div style={styleDivButton}>
-        <Button variant="contained" color="primary" style={styleButton} onClick={() => submitAddUserRole()}>
+        <Button variant="contained" color="primary" style={styleButton} onClick={() => submitEditUserRole()}>
           Submit
         </Button>
         <Button variant="contained" color="secondary" style={styleButton} onClick={() => cancel()}>
@@ -436,4 +450,4 @@ console.log('userList >>',userList);
   );
 }
 
-export default AddUserRole;
+export default EditUserRole;
