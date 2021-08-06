@@ -84,6 +84,13 @@ const ListUserRole = () => {
     margin: '10px',
   };
 
+  function appendLeadingZeroes(n){
+    if(n <= 9){
+      return "0" + n;
+    }
+    return n
+  }
+
   const fetcData = async () => {
     const { status, data } = await api.get("/userRole/listUserRole");
 
@@ -91,7 +98,9 @@ const ListUserRole = () => {
       console.log('list role data > ', data);
       if (data.listUserRoleObj !== null && data.listUserRoleObj.length > 0) {
         for (let i = 0; i < data.listUserRoleObj.length; i++) {
-          userRoles[i] = { roleName: data.listUserRoleObj[i].roleObj.roleName , userName:data.listUserRoleObj[i].userObj.userName, groupId: data.listUserRoleObj[i].groupId }
+          let current_datetime = new Date(data.listUserRoleObj[i].createDate);
+let formatted_date = appendLeadingZeroes((current_datetime.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime.getDate()) + "-" + current_datetime.getFullYear() + " " + current_datetime.getHours() + ":" + current_datetime.getMinutes() + ":" + current_datetime.getSeconds();
+          userRoles[i] = { roleName: data.listUserRoleObj[i].roleObj.roleName , userName:data.listUserRoleObj[i].userObj.userName, groupId: data.listUserRoleObj[i].groupId,createBy:data.listUserRoleObj[i].createBy,createDate:formatted_date,updateDate:data.listUserRoleObj[i].updateDate,updateBy:data.listUserRoleObj[i].updateBy,status:data.listUserRoleObj[i].status }
           // objCheckedArray[i] = { isChecked: true, id: menu.listMenu[i].id }
         }
         setListUserRole(userRoles);
@@ -187,6 +196,9 @@ const ListUserRole = () => {
               <TableCell style={{ width: 320, fontSize: 18 }}>
                 <p>Update By</p>
               </TableCell>
+              <TableCell style={{ width: 320, fontSize: 18 }}>
+                <p>Status</p>
+              </TableCell>
               <TableCell>
               </TableCell>
             </TableRow>
@@ -197,10 +209,11 @@ const ListUserRole = () => {
                 <TableRow tabIndex={-1} key={userRole.id}>
                   <TableCell>{userRole.userName}</TableCell>
                   <TableCell>{userRole.roleName}</TableCell>
-                  <TableCell>{userRole.roleName}</TableCell>
-                  <TableCell>{userRole.roleName}</TableCell>
-                  <TableCell>{userRole.roleName}</TableCell>
-                  <TableCell>{userRole.roleName}</TableCell>
+                  <TableCell>{userRole.createDate}</TableCell>
+                  <TableCell>{userRole.createBy}</TableCell>
+                  <TableCell>{userRole.updateDate}</TableCell>
+                  <TableCell>{userRole.updateBy}</TableCell>
+                  <TableCell>{userRole.status === 'ST001' ? 'Active' : ''}</TableCell>
                   <TableCell>
                     <Button variant="contained" color="primary" style={styleButton} onClick={() => editUser(userRole.groupId)}>
                       Edit

@@ -72,6 +72,13 @@ const ListRole = () => {
     margin: '10px',
   };
 
+  function appendLeadingZeroes(n){
+    if(n <= 9){
+      return "0" + n;
+    }
+    return n
+  }
+
   const fetcData = async () => {
     const { status, data } = await api.get("/role/listRole");
 
@@ -79,7 +86,10 @@ const ListRole = () => {
       console.log('list role data > ', data);
       if (data.listRoleObj !== null && data.listRoleObj.length > 0) {
         for (let i = 0; i < data.listRoleObj.length; i++) {
-          rowsRole[i] = { roleName: data.listRoleObj[i].roleName, id: data.listRoleObj[i].id }
+          let current_datetime = new Date(data.listRoleObj[i].createDate);
+let formatted_date = appendLeadingZeroes((current_datetime.getMonth() + 1)) + "-" + appendLeadingZeroes(current_datetime.getDate()) + "-" + current_datetime.getFullYear() + " " + current_datetime.getHours() + ":" + current_datetime.getMinutes() + ":" + current_datetime.getSeconds();
+
+          rowsRole[i] = { roleName: data.listRoleObj[i].roleName, id: data.listRoleObj[i].id,createBy:data.listRoleObj[i].createBy,createDate:formatted_date,updateDate:data.listRoleObj[i].updateDate,updateBy:data.listRoleObj[i].updateBy,status:data.listRoleObj[i].status }
           // objCheckedArray[i] = { isChecked: true, id: menu.listMenu[i].id }
         }
         setListRole(rowsRole);
@@ -172,6 +182,9 @@ const ListRole = () => {
               <TableCell style={{ width: 320, fontSize: 18 }}>
                 <p>Update By</p>
               </TableCell>
+              <TableCell style={{ width: 320, fontSize: 18 }}>
+                <p>Status</p>
+              </TableCell>
               <TableCell>
               </TableCell>
             </TableRow>
@@ -181,10 +194,11 @@ const ListRole = () => {
               return (
                 <TableRow tabIndex={-1} key={role.id}>
                   <TableCell>{role.roleName}</TableCell>
-                  <TableCell>{role.roleName}</TableCell>
-                  <TableCell>{role.roleName}</TableCell>
-                  <TableCell>{role.roleName}</TableCell>
-                  <TableCell>{role.roleName}</TableCell>
+                  <TableCell>{role.createDate}</TableCell>
+                  <TableCell>{role.createBy}</TableCell>
+                  <TableCell>{role.updateDate}</TableCell>
+                  <TableCell>{role.updateBy}</TableCell>
+                  <TableCell>{role.status === 'ST001' ? 'Active' : ''}</TableCell>
                   <TableCell>
                     <Button variant="contained" color="primary" style={styleButton} onClick={() => editUser(role.id)}>
                       Edit
