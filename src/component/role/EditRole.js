@@ -170,31 +170,10 @@ const EditRole = (roleObj) => {
     console.log('roleObj', roleObj);
     const { status, data } = await api.post("/role/editRole", roleObj);
     console.log('data', data);
-    if (data === 'Success') {
+    if (data === 'success') {
       history.push("/listRole");
-    }
-  }
-
-  const submitAddRole = async (roleName, listGroupRoleMenu) => {
-    let ArrayRoleMenu = [];
-    for (let i = 0; i < checkedGroupMenu.length; i++) {
-      if (checkedGroupMenu[i].isChecked === true) {
-        for (let f = 0; f < listRoleMenu.length; f++) {
-          if (listRoleMenu[f].groupId === checkedGroupMenu[i].id) {
-            if (listRoleMenu[f].roleRight !== 'D') {
-              ArrayRoleMenu.push(listRoleMenu[f]);
-            }
-          }
-        }
-      }
-    }
-
-    const roleObj = { roleName: roleName, listRoleMenuObj: ArrayRoleMenu };
-    console.log('roleObj', roleObj);
-    const { status, data } = await api.post("/role/addRole", roleObj);
-    console.log('data', data);
-    if (data === 'Success') {
-      history.push("/listRole");
+    }else if(data === 'duplicate'){
+      alert('Data Duplicate');
     }
   }
 

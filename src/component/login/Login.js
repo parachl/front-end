@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container } from './Container';
 import { Wrapper } from './Wrapper';
 import styles from './Login.module.css';
@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import logo from '../../image/Thai-Life-Logo.jpg';
 import { Button } from 'reactstrap';
 import { authenticationService } from '../../_services/authentication.service';
-
+import api from '../../api/GetApi';
 
 const Login = () => {
     const [username, setUsername] = useState("");
@@ -14,70 +14,36 @@ const Login = () => {
     localStorage.clear();
     const history = useHistory();
 
-    let value = '';
+    const verifyLogin = async (username,password) => {
+        const userName = username;
+        const userObj = { userName };
+        console.log('userObj', userObj);
+        const { status, data } = await api.post("/verifyLogin", userObj);
+        if (status === 200) {
+            if (data.isLogin) {
+                login(userObj);
+            }else {
+                alert('username or password is incorrect');
+            }
+        }else {
+            alert('error');
+        }
 
-    const login = () => {
-    //     const menus = [
-    //         {
-    //           title: "Home",
-    //           icon: "home",
-    //           path: "/home",
-    //           action: null,
-    //           subMenu: [
-    //             {
-    //               title: "PageOne",
-    //               icon: "",
-    //               path: "/home/homeOne",
-    //               action:"AED",
-        
-    //             }, {
-    //               title: "Home2",
-    //               icon: "",
-    //               path: "/home/homeTwo",
-    //               action:"AED",
-    //             }
-    //           ]
-    //         },
-    //         {
-    //           title: "About",
-    //           icon: "id-card-alt",
-    //           path: "/about",
-    //           action:"V",
-    //           subMenu: null
-    //         },
-    //         {
-    //           title: "Portfolio",
-    //           icon: "image",
-    //           path: "/portfolio",
-    //           action:"V",
-    //           subMenu: null
-    //         },
-    //         {
-    //           title: "FAQ",
-    //           icon: "question",
-    //           path: "/fqa",
-    //           action:"AED",
-    //           subMenu: null
-    //         },
-    //         {
-    //           title: "Report",
-    //           icon: "paper-plane",
-    //           path: "/report",
-    //           action:"AED",
-    //           subMenu: null
-    //         },
-    //       ];
+    }
 
-    // const listMenu = Object.keys(menus).map(function (key) {
-    //     const menu = menus[key];
-    //     menu.name = key;
-    //     return menu;
-    //   });
+    const login = async (userObj) => {
 
-    //  localStorage.setItem('listMenu', JSON.stringify(menus));
- 
-    
-     history.push("/main");
+        const { status, data } = await api.post("/getMenu", userObj);
+
+        if (status === 200) {
+            console.log("data >>", data);
+            localStorage.setItem('listMenu', JSON.stringify(data));
+            history.push("/main");
+
+        } else {
+            alert('error');
+        }
+
     }
 
     return (
@@ -90,14 +56,18 @@ const Login = () => {
                     </div>
                     <div className="form-group">
                         <label>User</label>
-                        <input type="email" className="form-control" placeholder="Enter user" value={value} />
+                        <input type="email" className="form-control" placeholder="Enter user" value={username} onChange={(e) => {
+                    setUsername(e.target.value);
+                  }} />
                     </div>
                     <div className="form-group">
                         <label>Password</label>
-                        <input type="password" className="form-control" placeholder="Enter password" value={value} />
+                        <input type="password" className="form-control" placeholder="Enter password" value={password} onChange={(e) => {
+                    setPassword(e.target.value);
+                  }} />
                     </div>
                     <div className="text-center">
-                        <Button type="button" onClick={login}>Submit</Button>
+                        <Button type="button" onClick={() => verifyLogin(username,password)}>Submit</Button>
                     </div>
                 </form>
             </Wrapper>

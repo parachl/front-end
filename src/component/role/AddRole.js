@@ -80,7 +80,7 @@ const AddRole = () => {
       dispathch(hideSpinner())
     }, 500);
 
-    const result = AuthenService.checkPermission('AddRole', 'AED');
+    const result = AuthenService.checkPermission('AddRole', 'A');
 
     if (!result) {
       history.push("/main");
@@ -132,8 +132,11 @@ const AddRole = () => {
     console.log('roleObj', roleObj);
     const { status, data } = await api.post("/role/addRole", roleObj);
     console.log('data', data);
-    if (data === 'Success') {
+    if (data === 'success') {
       history.push("/listRole");
+    }else if(data === 'duplicate'){
+      console.log('data', data);
+      alert('Data Duplicate');
     }
   }
 

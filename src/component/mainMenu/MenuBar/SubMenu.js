@@ -82,7 +82,7 @@ const Submenu = ({ item }) => {
             {subNav && item.listMenu.map((item, index) => {
                 return (
                     <DropdownLink to={item.path} key={index}>
-                       <FontAwesomeIcon icon={list} className="mr-2" />
+                       <FontAwesomeIcon icon={listIcon.concat(item.icon)} className="mr-2" />
                        <SideBarLabel>{item.menuName}</SideBarLabel>
                     </DropdownLink>
                 )

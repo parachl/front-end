@@ -31,15 +31,9 @@ const MainMenu = () => {
   
   const fetcData = async () => {
     console.log('test test');
-    const { status, data } = await api.get("/test");
-
-    if (status === 200) {
-         setData(JSON.stringify(data));
-         localStorage.setItem('listMenu', JSON.stringify(data));
-         console.log("data >>", data);
-    } else {
-         alert('error');
-    }
+    const menus = JSON.parse(localStorage.getItem('listMenu'));
+    setData(menus);
+    
 }
 
   useEffect(() => {
